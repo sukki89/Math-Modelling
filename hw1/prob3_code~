@@ -1,0 +1,145 @@
+3a.
+%interpolate function
+function [ C ] = interpolate(A, B, t )
+  C = (1-t).* A + t.* B
+end
+
+%code to show interpolation and extrapolation
+[x2,map] = imread('/home/kami/Documents/FALL/modelling/hw1/nikki_minaj.jpg');
+load mandrill;
+mandrill_cropped = Mandrill(1:252,1:228,1:3)
+C = interpolate(double(x2),mandrill_cropped,0.25);
+imshow(C)
+C = interpolate(mandrill_cropped,double(x2),1.25);
+imshow(C)
+
+%code for the movie
+function [] = mov( A,B,n)
+    F(n) = struct('cdata',[],'colormap',[]);
+    for j = 1:n
+        C = interpolate(double(A),double(B),j-1/n);
+        imshow(C);
+        F(j) = getframe;
+    end
+    movie(F);
+end
+
+3b1.
+%grayscale
+function [ G ] = grayscale( A )
+%Converts an image to gray scale
+% R = G = B
+    [R,G,B] = image2rgb(A);
+    G = cat(3, (R+G+B)/3, (R+G+B)/3, (R+G+B)/3);
+end
+
+C = grayscale(mandrill)
+imshow(C)
+
+3b2.
+%saturate
+function [ S ] = saturate( A,t )
+%changes image saturation
+   grayScale = grayscale(A);
+   S = interpolate(A,grayScale,t);
+end
+
+C = grayscale(mandrill,0.25)
+imshow(C)
+C = grayscale(mandrill,1)
+imshow(C)
+
+3bc.
+%brigten
+function [ B ] = brighten( A,t )
+%brightens the image
+    B = t.* A;
+end
+C = brighten(mandrill,0.25)
+imshow(C)
+C = brighten(mandrill,-0.25)
+imshow(C)
+
+
+3b4.
+%darken
+function [ D ] = darken(A,t )
+% darkens the image
+    hsvConverted = rgb2hsv(A);
+    H = double(hsvConverted(:,:,1));
+    S = double(hsvConverted(:,:,2));
+    V = double(hsvConverted(:,:,3));
+    V = t.* V;
+    hsvDarkened = cat(3,H,S,V);
+    D = hsv2rgb(hsvDarkened);
+end
+
+D = darken(mandrill,0.25)
+imshow(D);
+
+3d1.
+color_inversion
+function [ Y ] = color_inversion( A )
+% inverts the color in the image
+    [R,G,B] = image2rgb(A);
+    R1 = 255 - R;
+    G1 = 255 - G;
+    B1 = 255 - B;
+    Y = rgb2image(R1,G1,B1);
+end
+
+Y = color_inversion(X)
+imshow(Y)
+
+3d2.
+%Color transform
+function [ Y ] = YCbCr( A )
+%YCbCr
+    T = [0.29900, 0.58700, 0.11400; -0.16874,-0.33126,0.50000;0.50000,-0.41869,-0.8131];
+    v = [0;128;128];
+    [R,G,B] = image2rgb(A);
+    [rows,cols] = size(R);
+    for r = 1:rows
+        for c = 1:cols
+            color = [R(r,c);G(r,c);B(r,c)];
+            color = T*color;
+            color = color + v;
+            R1(r,c) = round(color(1));
+            G1(r,c) = round(color(2));
+            B1(r,c) = round(color(3));         
+        end       
+    end   
+    Y = rgb2image(R1,G1,B1);
+end
+
+
+3d3.
+>> T = [0.29900, 0.58700, 0.11400; -0.16874,-0.33126,0.50000;0.50000,-0.41869,-0.08131];
+>> min_value
+
+min_value =
+
+     0
+     0
+     0
+>> max_value =
+ 
+   255
+   255
+   255
+>> T*max_value + v
+
+ans =
+
+   255
+   128
+   128
+
+>> T*min_value + v
+
+ans =
+
+     0
+   128
+   128
+Since for both max and min values of R,G,B components of color matrrix the resultant is positive, for values in between it will be positive.

@@ -1,0 +1,66 @@
+Problem 4:
+
+a. Code to generate a plot of average temperature anamoly in July for the years 1900-2014 for United States
+
+GHCN = csvread('ghcn.csv');
+GHCN_in_centigrade  = (GHCN(:,3:74) - 2500) / 100;
+temperature_anomaly = reshape( GHCN_in_centigrade, [36, 12, 135, 72] );   
+US_latitude  = 9:12
+US_longitude = 15:20
+my_years = 1900:2013
+my_slice = temperature_anomaly( US_latitude, :, my_years - 1880, US_longitude );
+
+total_number_of_grid_squares = length(US_latitude) * length(US_longitude) * 12;
+N = total_number_of_grid_squares;
+monthly_anamoly = sum(sum(my_slice, 4),1);
+for n = 1:114
+  yearly_matrix(1:12) = monthly_anamoly(:,:,n);
+  july_anomaly(n) = yearly_matrix(7)/N;
+end
+plot( my_years, july_anomaly )
+xlim([1900,2014])
+
+b. Code to generate a plot of average temperature anamoly in July for the years 1900-2014 for entire world
+
+GHCN = csvread('ghcn.csv');
+GHCN_in_centigrade  = (GHCN(:,3:74) - 2500) / 100;
+temperature_anomaly = reshape( GHCN_in_centigrade, [36, 12, 135, 72] );   
+US_latitude  = 1:36
+US_longitude = 1:72
+my_years = 1914:2013
+my_slice = temperature_anomaly( US_latitude, :, my_years - 1880, US_longitude );
+
+total_number_of_grid_squares = length(US_latitude) * length(US_longitude) * 12;
+N = total_number_of_grid_squares;
+monthly_anamoly = sum(sum(my_slice, 4),1);
+for n = 1:100
+  yearly_matrix(1:12) = monthly_anamoly(:,:,n);
+  july_anomaly(n) = yearly_matrix(7)/N;
+end
+plot( my_years, july_anomaly(1:100) )
+xlim([1900,2014])
+
+c. function [] = ghcn_hotplot()
+    GHCN = csvread('/home/kami/Documents/FALL/modelling/hw1/Homework1/ghcn.csv');
+    GHCN_in_centigrade  = (GHCN(:,3:74) - 2500) / 100;
+    temperature_anomaly = reshape( GHCN_in_centigrade, [36, 12, 135, 72] );   
+    US_latitude  = 1:36;
+    US_longitude = 1:72;
+    my_years = 1880:2014;
+    my_slice = temperature_anomaly( US_latitude, :, my_years - 1880, US_longitude );
+    
+    colormap(hot)
+    F(114) = struct('cdata',[],'colormap',[]);
+    total_number_of_grid_squares = length(US_latitude) * length(US_longitude) * 12;
+    N = total_number_of_grid_squares;
+    monthly_anamoly = sum(sum(my_slice, 4),1);
+    
+    for n = 1:134
+      yearly_matrix(1:12) = monthly_anamoly(:,:,n);
+      july_anomaly(n) = yearly_matrix(7)/N;
+      plot( my_years(1:n), july_anomaly );
+      F(n) = getframe;
+    end
+    xlim([1900,2010]);      
+    movie(F);
+end

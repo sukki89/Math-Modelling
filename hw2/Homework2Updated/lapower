@@ -1,0 +1,6 @@
+clear all;
+folder = '/home/kami/Documents/FALL/modelling/hw2/Homework2Updated/';
+csvfile = 'LApower.csv';
+filename = strcat(folder,csvfile);
+data = csvread( filename, 1, 0 );   
+
